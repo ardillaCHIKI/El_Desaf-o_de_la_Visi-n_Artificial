@@ -1,0 +1,48 @@
+# Ignorar entorno virtual
+venv/
+ENV/
+env/
+.venv/
+
+# Ignorar dependencias instaladas
+*.egg-info/
+*.whl
+__pycache__/
+*.pyc
+
+# Ignorar archivos binarios y compilados
+*.so
+*.dll
+*.exe
+*.dylib
+*.a
+*.o
+
+# Ignorar archivos grandes y temporales
+*.log
+*.tmp
+*.bak
+*.swp
+*.zip
+*.tar.gz
+
+# Ignorar carpetas de caché y configuración
+.cache/
+.ipynb_checkpoints/
+.idea/
+.vscode/
+
+# Ignorar archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Ignorar modelos y datos pesados (ajusta según tu proyecto)
+*.h5
+*.ckpt
+*.pb
+*.tflite
+*.npy
+*.npz
+
+# Ignorar notebooks si no los quieres versionar
+*.ipynb

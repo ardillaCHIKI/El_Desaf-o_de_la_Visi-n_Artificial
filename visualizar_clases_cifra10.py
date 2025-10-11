@@ -25,6 +25,8 @@ for i in range(10):
 plt.suptitle("Ejemplos representativos de las 10 clases CIFAR-10")
 plt.tight_layout()
 plt.show()
+plt.savefig("muestra_cifar10.png")
+print("La cuadrícula de imágenes se ha guardado como 'muestra_cifar10.png'. Puedes abrir este archivo para ver las imágenes si no se muestra la ventana gráfica.")
 
 # Comentarios descriptivos
 print("\nObservaciones:")

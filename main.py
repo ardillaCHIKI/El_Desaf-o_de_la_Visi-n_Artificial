@@ -3,6 +3,7 @@ from flask import Flask, render_template_string, send_file
 import io
 import matplotlib.pyplot as plt
 import numpy as np
+from graficar_metricas_entrenamiento import graficar_metricas
 
 app = Flask(__name__)
 

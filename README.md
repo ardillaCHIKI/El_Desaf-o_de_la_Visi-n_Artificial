@@ -1,4 +1,5 @@
 # El_Desaf-o_de_la_Visi-n_Artificial
+Repositorio original:  
 https://github.com/ardillaCHIKI/El_Desaf-o_de_la_Visi-n_Artificial.git
 
 # El Desafío de la Visión Artificial
@@ -168,8 +169,5 @@ Scripts educativos y de experimentación, cada uno aborda una etapa del pipeline
 - El código está ampliamente comentado y pensado para fines educativos.
 - Puedes ejecutar cada script de la carpeta `scripts/` de forma independiente para entender cada etapa.
 - El modelo y la app están preparados para experimentar y modificar fácilmente.
-
-Repositorio original:  
-https://github.com/ardillaCHIKI/El_Desaf-o_de_la_Visi-n_Artificial.git
 
 ---

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clasificar Imagen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .upload-section {
+            text-align: center;
+            padding: 40px;
+            background: #f9f9f9;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .upload-area:hover {
+            background: #f0f0f0;
+            border-color: #764ba2;
+        }
+        
+        .upload-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+        
+        #fileInput {
+            display: none;
+        }
+        
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .results {
+            display: none;
+            padding: 30px;
+            background: #f9f9f9;
+            border-radius: 15px;
+        }
+        
+        .results.show {
+            display: block;
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            align-items: start;
+        }
+        
+        .image-preview {
+            text-align: center;
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            image-rendering: pixelated;
+        }
+        
+        .predictions {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .prediction-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .prediction-item.top {
+            background: #e8f5e9;
+            border-left-color: #4caf50;
+        }
+        
+        .prediction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .class-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .probability {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .probability-bar {
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .probability-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s ease;
+        }
+        
+        .test-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #fff3cd;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="/" class="back-btn">← Volver al Inicio</a>
+            <h1>📤 Clasificar Imagen</h1>
+            <p>Sube tu imagen o prueba con ejemplos del dataset</p>
+        </header>
+        
+        <div class="content">
+            <div class="upload-section">
+                <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                    <div class="upload-icon">📁</div>
+                    <h2>Click para seleccionar imagen</h2>
+                    <p>o arrastra y suelta aquí</p>
+                    <p style="margin-top: 10px; color: #666; font-size: 0.9em;">Formatos: JPG, PNG (se redimensionará a 32x32)</p>
+                </div>
+                <input type="file" id="fileInput" accept="image/*">
+                <button class="btn" id="uploadBtn" disabled>Clasificar Imagen</button>
+            </div>
+            
+            <div class="test-section">
+                <h3>🎲 ¿No tienes imagen? Prueba con el dataset</h3>
+                <button class="btn" id="randomTestBtn">Clasificar Imagen Aleatoria del Test Set</button>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p style="margin-top: 10px;">Clasificando...</p>
+            </div>
+            
+            <div class="results" id="results">
+                <h2 style="margin-bottom: 20px;">🎯 Resultados de la Clasificación</h2>
+                <div class="result-grid">
+                    <div class="image-preview">
+                        <h3>Imagen Original</h3>
+                        <img id="resultImage" src="" alt="Imagen">
+                    </div>
+                    <div class="predictions" id="predictions">
+                        <!-- Se llenará dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let selectedFile = null;
+        
+        // Manejo de selección de archivo
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            selectedFile = e.target.files[0];
+            if (selectedFile) {
+                document.getElementById('uploadBtn').disabled = false;
+            }
+        });
+        
+        // Drag and drop
+        const uploadArea = document.querySelector('.upload-area');
+        
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.style.background = '#f0f0f0';
+        });
+        
+        uploadArea.addEventListener('dragleave', function(e) {
+            this.style.background = 'white';
+        });
+        
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.style.background = 'white';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                selectedFile = files[0];
+                document.getElementById('fileInput').files = files;
+                document.getElementById('uploadBtn').disabled = false;
+            }
+        });
+        
+        // Subir y clasificar
+        document.getElementById('uploadBtn').addEventListener('click', function() {
+            if (!selectedFile) return;
+            
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            
+            // Mostrar loading
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('results').classList.remove('show');
+            
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loading').classList.remove('show');
+                
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                    return;
+                }
+                
+                // Mostrar resultados
+                displayResults(data.image, data.predictions, null);
+            })
+            .catch(error => {
+                document.getElementById('loading').classList.remove('show');
+                alert('Error al clasificar imagen: ' + error);
+            });
+        });
+        
+        // Probar con imagen aleatoria del test set
+        document.getElementById('randomTestBtn').addEventListener('click', function() {
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('results').classList.remove('show');
+            
+            // Obtener índice aleatorio
+            fetch('/random_test')
+            .then(response => response.json())
+            .then(data => {
+                // Clasificar esa imagen
+                return fetch('/test_sample/' + data.index);
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loading').classList.remove('show');
+                
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                    return;
+                }
+                
+                // Mostrar resultados con clase real
+                displayResults(data.image, data.predictions, {
+                    id: data.real_class_id,
+                    name: data.real_class_name
+                });
+            })
+            .catch(error => {
+                document.getElementById('loading').classList.remove('show');
+                alert('Error: ' + error);
+            });
+        });
+        
+        // Función para mostrar resultados
+        function displayResults(imageBase64, predictions, realClass) {
+            // Mostrar imagen
+            document.getElementById('resultImage').src = imageBase64;
+            
+            // Crear HTML de predicciones
+            let html = '';
+            
+            predictions.forEach((pred, index) => {
+                const isTop = index === 0;
+                const isCorrect = realClass && pred.class_id === realClass.id;
+                
+                let itemClass = 'prediction-item';
+                if (isTop) itemClass += ' top';
+                
+                html += `
+                    <div class="${itemClass}">
+                        <div class="prediction-header">
+                            <span class="class-name">
+                                ${index + 1}. ${pred.class_name}
+                                ${isTop ? '🏆' : ''}
+                                ${isCorrect ? '✅' : ''}
+                            </span>
+                            <span class="probability">${pred.percentage}%</span>
+                        </div>
+                        <div class="probability-bar">
+                            <div class="probability-fill" style="width: ${pred.percentage}%"></div>
+                        </div>
+                        <p style="margin-top: 5px; color: #666; font-size: 0.9em;">
+                            ${pred.class_name_en}
+                        </p>
+                    </div>
+                `;
+            });
+            
+            // Añadir información de clase real si existe
+            if (realClass) {
+                const isCorrect = predictions[0].class_id === realClass.id;
+                html = `
+                    <div style="padding: 15px; background: ${isCorrect ? '#e8f5e9' : '#ffebee'}; 
+                                border-radius: 10px; margin-bottom: 20px;">
+                        <strong style="font-size: 1.2em;">
+                            Clase Real: ${realClass.name}
+                            ${isCorrect ? '✅ ¡Correcto!' : '❌ Incorrecto'}
+                        </strong>
+                    </div>
+                ` + html;
+            }
+            
+            document.getElementById('predictions').innerHTML = html;
+            document.getElementById('results').classList.add('show');
+            
+            // Scroll suave a resultados
+            document.getElementById('results').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'nearest' 
+            });
+        }
+    </script>
+</body>
+</html>

@@ -34,6 +34,21 @@ history = model.fit(
     verbose=1
 )
 
+# Al final del entrenamiento, después de model.fit()
+import json
+
+# Guardar historial de entrenamiento
+historial_dict = {
+    'accuracy': [float(x) for x in history.history['accuracy']],
+    'val_accuracy': [float(x) for x in history.history['val_accuracy']],
+    'loss': [float(x) for x in history.history['loss']],
+    'val_loss': [float(x) for x in history.history['val_loss']]
+}
+
+with open('historial_entrenamiento.json', 'w') as f:
+    json.dump(historial_dict, f, indent=4)
+
+print("✅ Historial guardado en 'historial_entrenamiento.json'")
 # Mostrar métricas por época
 print("\n📊 Métricas por época:")
 for i in range(10):
